@@ -1,6 +1,6 @@
 <pre>
 Title:       <b>Permissioned DEXes</b>
-Revision:    <b>2</b> (2024-09-25)
+Revision:    <b>3</b> (2024-12-02)
 
 Author:      <a href="mailto:mvadari@ripple.com">Mayukha Vadari</a>
 
@@ -19,7 +19,7 @@ This proposal introduces a permissioned DEX system for the XRPL. By integrating 
 
 ## 1. Overview
 
-This proposal builds on top of [XLS-80d, Permissioned Domains](https://gist.github.com/mvadari/19568595d558dbf5b22b1355b9e729e8), as Permissioned Domains are needed to handle the permissioning aspect.
+This proposal builds on top of [XLS-80d, Permissioned Domains](https://github.com/XRPLF/XRPL-Standards/tree/master/XLS-0080d-permissioned-domains), as Permissioned Domains are needed to handle the permissioning aspect.
 
 We propose:
 * Modifying the `Offer` ledger object.
@@ -103,11 +103,13 @@ As a reference, [here](https://xrpl.org/docs/references/protocol/ledger-data/led
 |`TakerGets`|✔️|`object`|`Amount`|The remaining amount and type of currency being provided by the offer creator.|
 </details>
 
-This spec proposes these additions:
+This spec proposes deprecating the `BookDirectory` and `BookNode` fields and adding the following:
 
 | Field Name | Required? | JSON Type | Internal Type | Description |
 |------------|-----------|-----------|---------------|-------------|
 |`DomainID`| |`string`|`Hash256`|The domain that the offer must be a part of.|
+|`BookDirectories`|✔️|`string`|`Vector256`|The IDs of the offer directories that link to this offer.|
+|`BookNodes`|✔️|`string`|`STArray`|Hints indicating which pages of the offer directory links to this entry, in case the directories consist of multiple pages.|
 
 #### 2.1.1. `DomainID`
 
@@ -218,6 +220,10 @@ We propose these additions:
 |------------|-----------|-----------|---------------|-------------|
 |`DomainID`| |`string`|`Hash256`|The domain that the offer must be a part of.|
 
+#### 4.1.1. `Flags`
+
+This spec proposes an additional flag, to indicate whether the offer should consider only the `DomainID`'s Permissioned DEX or also include the open DEX.
+
 ### 4.2. Failure Conditions
 
 The existing set of failure conditions for `OfferCreate` will continue to exist.
@@ -264,6 +270,10 @@ We propose these additions:
 #### 5.1.1. `DomainID`
 
 The `DomainID` can only be included if the payment is a cross-currency payment (i.e. if the payment is going to interact with the DEX). It should only be included if the payment is permissioned.
+
+#### 5.1.2. `Flags`
+
+This spec proposes an additional flag, to indicate whether the offer should consider only the `DomainID`'s Permissioned DEX or also include the open DEX.
 
 ### 5.2. Failure Conditions
 
